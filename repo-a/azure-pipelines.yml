@@ -1,0 +1,33 @@
+
+parameters:
+  - name: targetRepo
+    type: string
+    default: 'repo-a'
+
+trigger:
+  branches:
+    include:
+      - main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+jobs:
+- job: BuildRepoA
+  condition: eq('${{ parameters.targetRepo }}', 'repo-a')
+  steps:
+    - checkout: self
+    - script: |
+        echo "Running build for Repo A (Python)"
+        python app-a/main.py
+
+- job: BuildRepoB
+  condition: eq('${{ parameters.targetRepo }}', 'repo-b')
+  steps:
+    - checkout: none
+    - script: |
+        echo "Cloning Repo B from GitHub..."
+        git clone https://github.com/YOUR_GITHUB_USER/repo-b.git
+        cd repo-b/app-b
+        echo "Running build for Repo B (Node.js)"
+        node index.js
